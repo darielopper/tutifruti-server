@@ -1,6 +1,7 @@
 const utils = require('./utils');
 let boards = []
-const inactivityTimeout = process.env.TIMEOUT || 5
+const inactivityTimeout = process.env.TIMEOUT || 30
+const maxPlayers = process.env.MAX_PLAYER || 1
 
 module.exports = {
     add(id) {
@@ -13,8 +14,17 @@ module.exports = {
             this.add(id)
             board = boards.slice(-1).pop()
         }
+        if (board.clients.length + 1 > maxPlayers) {
+            return false;
+        }
         board.clients.push(client)
         board.time = new Date();
+
+        return true;
+    },
+
+    find(id) {
+        return boards.find(board => board.id === id);
     }
 };
 

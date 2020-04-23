@@ -23,6 +23,14 @@ module.exports = {
                     const id = utils.uniqueId();
                     boards.addClient(id, client)
                     client.send(id)
+                    return;
+                }
+
+                if (message.startsWith(constants.JOIN_BOARD)) {
+                    const [msg, boardId] = message.split(':')
+                    if (!boards.addClient(boardId, client)) {
+                        client.send(constants.CLOSE_BOARD);
+                    }
                 }
             })
         });
