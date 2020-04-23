@@ -15,5 +15,6 @@ module.exports = {
 }
 
 const onConnection = (client) => {
+    console.log('Connected 1 client');
     client.send(utils.uniqueId());
 }
