@@ -28,7 +28,7 @@ module.exports = {
 
                 if (message.startsWith(constants.JOIN_BOARD)) {
                     const [msg, boardId] = message.split(':')
-                    if (!boards.addClient(boardId, client)) {
+                    if (!boards.addClient(boardId, client, true)) {
                         client.send(constants.CLOSE_BOARD);
                     }
                 }

@@ -8,9 +8,12 @@ module.exports = {
         boards.push({ id, time: new Date(), clients: [] })
     },
 
-    addClient(id, client) {
+    addClient(id, client, restrict = false) {
         let board = boards.find(board => board.id === id);
         if (!board) {
+            if (restrict) {
+                return false;
+            }
             this.add(id)
             board = boards.slice(-1).pop()
         }
