@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const utils = require('./utils');
+const boards = require('./boards');
 
 let ws;
 const port = process.env.PORT || 8081
@@ -16,5 +17,7 @@ module.exports = {
 
 const onConnection = (client) => {
     console.log('Connected 1 client');
-    client.send(utils.uniqueId());
+    const id = utils.uniqueId();
+    boards.addClient(id, client);
+    client.send(id);
 }
