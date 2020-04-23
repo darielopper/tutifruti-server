@@ -25,6 +25,7 @@ const removeBoard = (id) => {
 const automaticClean = () => {
     setInterval(() => {
         // Obtain the boards with an inactivity bigger than the time stablished on TIMEOUT var
+        // @TODO And the game is not paused
         const toRemove = boards.filter(board => utils.diffInSeconds(board.time, new Date()) > inactivityTimeout)
         toRemove.forEach(board => {
             board.clients.forEach(client => client.send('END CONNECTION FOR INACTIVITY'))
