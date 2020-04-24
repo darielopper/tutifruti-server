@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const utils = require('./utils');
 const boards = require('./boards');
-const constants = require('./constants');
+const {messages, errors} = require('./constants');
 
 let ws;
 const port = process.env.PORT || 8081
@@ -19,30 +19,47 @@ module.exports = {
 
             client.on('message', function incomming(message) {
                 console.log(message);
-                if (message === constants.START_BOARD) {
+                if (message === messages.START_BOARD) {
                     const id = utils.uniqueId();
                     boards.addClient(id, client);
-                    client.send(id);
+                    client.send('BoardId: ' + id);
+                    client.send('ClientId: ' + client.id);
                     return;
                 }
 
-                if (message.startsWith(constants.JOIN_BOARD)) {
+                if (message.startsWith(messages.JOIN_BOARD)) {
                     const [msg, boardId] = message.split(':');
                     if (!boards.addClient(boardId, client, true)) {
-                        client.send(constants.CLOSE_BOARD);
+                        client.send(messages.CLOSE_BOARD);
                     }
+                    client.send('ClientId: ' + client.id);
+                    return;
                 }
 
-                if (message.startsWith(constants.PAUSE_GAME)) {
-                    const [msg, boardId] = message.split(':');
-                    const playerForPause = boards.pauseGame(boardId);
-                    if (!playerForPause) {
-                        client.send(constants.BOARD_NOT_FOUND);
+                if (message.startsWith(messages.PAUSE_GAME)) {
+                    const [msg, boardId, clientId] = message.split(':');
+                    const playerForPause = boards.pauseGame(boardId, clientId);
+                    if (utils.isInvalidClientsResult(playerForPause)) {
+                        client.send(!playerForPause ? messages.BOARD_NOT_FOUND: messages.INVALID_OPERATION);
                         return;
                     }
                     for (clientPlayer of playerForPause) {
-                        clientPlayer.send(constants.GAME_PAUSED);
+                        clientPlayer.send(messages.GAME_PAUSED);
                     }
+                    return;
+                }
+
+                if (message.startsWith(messages.RESUME_GAME)) {
+                    const [msg, boardId, clientId] = message.split(':');
+                    const playerForResume = boards.resumeGame(boardId, clientId);
+                    if (utils.isInvalidClientsResult(playerForResume)) {
+                        client.send(!playerForResume ? messages.BOARD_NOT_FOUND : messages.INVALID_OPERATION);
+                        return;
+                    }
+                    for (clientPlayer of playerForResume) {
+                        clientPlayer.send(messages.GAME_RESUMED);
+                    }
+                    return;
                 }
             })
         });

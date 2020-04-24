@@ -1,5 +1,5 @@
 const utils = require('./utils');
-const constants = require('./constants');
+const {messages, errors} = require('./constants');
 let boards = [];
 const inactivityTimeout = process.env.TIMEOUT || 60;
 const pauseTimeout = process.env.PAUSE_TIMEOUT || 20;
@@ -22,21 +22,44 @@ module.exports = {
         if (board.clients.length + 1 > maxPlayers) {
             return false;
         }
+        client.id = utils.clientId();
         board.clients.push(client);
         updateTime(board);
 
         return true;
     },
 
-    pauseGame(id, client) {
+    pauseGame(id, clientId) {
         // @TODO Add who pause the game
         board = this.find(id);
         if (!board) {
-            client.send(constants.BOARD_NOT_FOUND);
+            return false;
+        }
+        if (board.paused) {
+            return errors.INVALID_OPERATION;
+        }
+        if (!board.clients.find(client => client.id === clientId)) {
             return false;
         }
         updateTime(board);
         board.paused = true;
+        return board.clients || false;
+    },
+
+    resumeGame(id, clientId) {
+        // @TODO Add who resume the game
+        board = this.find(id);
+        if (!board) {
+            return false;
+        }
+        if (!board.paused) {
+            return errors.INVALID_OPERATION;
+        }
+        if (!board.clients.find(client => client.id === clientId)) {
+            return false;
+        }
+        updateTime(board);
+        board.paused = false;
         return board.clients || false;
     },
 
@@ -63,7 +86,7 @@ const automaticClean = () => {
             if (board.paused) {
                 board.paused = false;
                 updateTime(board);
-                board.clients.forEach(client => client.send(constants.GAME_RESUMED));
+                board.clients.forEach(client => client.send(messages.GAME_RESUMED));
                 return;
             }
             board.clients.forEach(client => client.send('END CONNECTION FOR INACTIVITY'))
