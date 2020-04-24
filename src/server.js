@@ -21,15 +21,27 @@ module.exports = {
                 console.log(message);
                 if (message === constants.START_BOARD) {
                     const id = utils.uniqueId();
-                    boards.addClient(id, client)
-                    client.send(id)
+                    boards.addClient(id, client);
+                    client.send(id);
                     return;
                 }
 
                 if (message.startsWith(constants.JOIN_BOARD)) {
-                    const [msg, boardId] = message.split(':')
+                    const [msg, boardId] = message.split(':');
                     if (!boards.addClient(boardId, client, true)) {
                         client.send(constants.CLOSE_BOARD);
+                    }
+                }
+
+                if (message.startsWith(constants.PAUSE_GAME)) {
+                    const [msg, boardId] = message.split(':');
+                    const playerForPause = boards.pauseGame(boardId);
+                    if (!playerForPause) {
+                        client.send(constants.BOARD_NOT_FOUND);
+                        return;
+                    }
+                    for (clientPlayer of playerForPause) {
+                        clientPlayer.send(constants.GAME_PAUSED);
                     }
                 }
             })

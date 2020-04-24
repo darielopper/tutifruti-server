@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const constants = require('./constants');
 let boards = []
 const inactivityTimeout = process.env.TIMEOUT || 30
 const maxPlayers = process.env.MAX_PLAYER || 1
@@ -24,6 +25,18 @@ module.exports = {
         board.time = new Date();
 
         return true;
+    },
+
+    pauseGame(id, client) {
+        // @TODO Add who pause the game
+        board = this.find(id);
+        if (!board) {
+            client.send(constants.BOARD_NOT_FOUND);
+            return false;
+        }
+        board.time = new Date();
+        board.paused = true;
+        return board.clients || false;
     },
 
     find(id) {
