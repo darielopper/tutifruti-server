@@ -9,9 +9,12 @@ module.exports = {
         GAME_RESUMED: '$GAME_RESUMED',
         RESUME_GAME: '$RESUME_GAME',
         INVALID_OPERATION: '$INVALID_OPERATION',
+        BAN_CLIENT: '$BAN',
+        CLIENT_NOT_FOUND: '$USER_NOT_FOUND',
     },
 
     errors: {
         INVALID_OPERATION: 3,
+        CLIENT_NOT_FOUND: 5,
     }
 }

@@ -37,8 +37,8 @@ module.exports = {
                 }
 
                 if (message.startsWith(messages.PAUSE_GAME)) {
-                    const [msg, boardId, clientId] = message.split(':');
-                    const playerForPause = boards.pauseGame(boardId, clientId);
+                    const [msg, boardId] = message.split(':');
+                    const playerForPause = boards.pauseGame(boardId, client.id);
                     if (utils.isInvalidClientsResult(playerForPause)) {
                         client.send(!playerForPause ? messages.BOARD_NOT_FOUND: messages.INVALID_OPERATION);
                         return;
@@ -50,8 +50,8 @@ module.exports = {
                 }
 
                 if (message.startsWith(messages.RESUME_GAME)) {
-                    const [msg, boardId, clientId] = message.split(':');
-                    const playerForResume = boards.resumeGame(boardId, clientId);
+                    const [msg, boardId] = message.split(':');
+                    const playerForResume = boards.resumeGame(boardId, client.id);
                     if (utils.isInvalidClientsResult(playerForResume)) {
                         client.send(!playerForResume ? messages.BOARD_NOT_FOUND : messages.INVALID_OPERATION);
                         return;
@@ -60,6 +60,15 @@ module.exports = {
                         clientPlayer.send(messages.GAME_RESUMED);
                     }
                     return;
+                }
+
+                if (message.startsWith(messages.BAN_CLIENT)) {
+                    const [msg, boardId, clientId] = message.split(':');
+                    const banUser = boards.banClient(boardId, clientId)
+                    if (banUser) {
+                        client.send(messages.BAN_USER);
+                    }
+                    client.send(!banUser ? messages.BOARD_NOT_FOUND : messages.CLIENT_NOT_FOUND);
                 }
             })
         });

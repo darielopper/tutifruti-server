@@ -29,6 +29,20 @@ module.exports = {
         return true;
     },
 
+    banClient(id, clientId) {
+        const board = this.find(id);
+        if (!board) {
+            return false;
+        }
+        const clients = board.clients.find(boardClient => boardClient.id !== clientId);
+        const foundClient = clients.length < board.clients.length;
+        if (!foundClient) {
+            return errors.CLIENT_NOT_FOUND;
+        }
+        board.clients = clients;
+        return true;
+    },
+
     pauseGame(id, clientId) {
         // @TODO Add who pause the game
         board = this.find(id);
