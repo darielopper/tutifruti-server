@@ -2,6 +2,7 @@ module.exports = {
     messages: {
         START_BOARD: '$START_BOARD',
         JOIN_BOARD: '$JOIN_BOARD',
+        LEAVE_BOARD: '$LEAVE',
         CLOSE_BOARD: '$CLOSE_BOARD',
         BOARD_NOT_FOUND: '$BOARD_NOT_FOUND',
         GAME_PAUSED: '$GAME_PAUSED',

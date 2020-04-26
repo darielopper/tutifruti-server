@@ -70,6 +70,19 @@ module.exports = {
                         return;
                     }
                     client.send(!banUser ? messages.BOARD_NOT_FOUND : messages.CLIENT_NOT_FOUND);
+                    return;
+                }
+
+                if (message.startsWith(messages.LEAVE_BOARD)) {
+                    const [msg, boardId] = message.split(':');
+                    const banUser = boards.banClient(boardId, client.id)
+                    if (banUser) {
+                        const clients = [...boards.find(boardId).clients];
+                        clients.push(banUser);
+                        clients.forEach(item => item.send(messages.BAN_CLIENT + ': ' + client.id));
+                        return;
+                    }
+                    client.send(!banUser ? messages.BOARD_NOT_FOUND : messages.CLIENT_NOT_FOUND);
                 }
             })
         });
