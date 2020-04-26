@@ -1,5 +1,5 @@
 const utils = require('./utils');
-const {messages, errors} = require('./constants');
+const {messages, errors, types: GameTypes} = require('./constants');
 let boards = new Map();
 const inactivityTimeout = process.env.TIMEOUT || 60;
 const pauseTimeout = process.env.PAUSE_TIMEOUT || 20;
@@ -34,6 +34,17 @@ module.exports = {
         }
         const board = boards.get(id);
         return board.clients.map(item => item.id);
+    },
+
+    setType(boardId, type) {
+        if (!boards.has(boardId)) {
+            return false;
+        }
+        if (!validTypes(type)) {
+            return errors.INVALID_TYPES;
+        }
+        boards.get(boardId).type = type;
+        return true;
     },
 
     hasClient(boardId, clientId) {
@@ -97,6 +108,8 @@ module.exports = {
         return board.clients || false;
     }
 };
+
+const validTypes = (types) => types.split(',').every(type => GameTypes.all.split(',').includes(type));
 
 const updateTime = (board) => board.time = new Date();
 

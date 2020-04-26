@@ -13,10 +13,17 @@ module.exports = {
         BAN_CLIENT: '$BAN',
         CLIENT_NOT_FOUND: '$USER_NOT_FOUND',
         CLIENTS: '$CLIENTS',
+        SET_TYPE: '$SET_TYPE',
+        INVALID_TYPES: '$INVALID_TYPES',
     },
 
     errors: {
         INVALID_OPERATION: 3,
         CLIENT_NOT_FOUND: 5,
+        INVALID_TYPES: 7,
+    },
+
+    types: {
+        all: 'fruit,country,name,color,animal,thing,last_name,plant,carreer',
     }
 }
