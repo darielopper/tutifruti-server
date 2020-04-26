@@ -1,24 +1,23 @@
 const utils = require('./utils');
 const {messages, errors} = require('./constants');
-let boards = [];
+let boards = new Map();
 const inactivityTimeout = process.env.TIMEOUT || 60;
 const pauseTimeout = process.env.PAUSE_TIMEOUT || 20;
 const maxPlayers = process.env.MAX_PLAYER || 2;
 
 module.exports = {
     add(id) {
-        boards.push({ id, time: new Date(), clients: [] });
+        boards.set(id, { id, time: new Date(), clients: [] });
     },
 
     addClient(id, client, restrict = false) {
-        let board = boards.find(board => board.id === id);
-        if (!board) {
+        if (!boards.has(id)) {
             if (restrict) {
                 return false;
             }
             this.add(id);
-            board = boards.slice(-1).pop();
         }
+        const board = boards.get(id);
         if (board.clients.length + 1 > maxPlayers) {
             return false;
         }
@@ -30,10 +29,10 @@ module.exports = {
     },
 
     banClient(id, clientId) {
-        const board = this.find(id);
-        if (!board) {
+        if (!boards.has(id)) {
             return false;
         }
+        const board = board.get(id);
         const clients = board.clients.filter(boardClient => boardClient.id !== clientId);
         const foundClient = clients.length < board.clients.length;
         if (!foundClient) {
@@ -46,10 +45,10 @@ module.exports = {
 
     pauseGame(id, clientId) {
         // @TODO Add who pause the game
-        board = this.find(id);
-        if (!board) {
+        if (!boards.has(id)) {
             return false;
         }
+        const board = boards.get(id);
         if (board.paused) {
             return errors.INVALID_OPERATION;
         }
@@ -63,10 +62,10 @@ module.exports = {
 
     resumeGame(id, clientId) {
         // @TODO Add who resume the game
-        board = this.find(id);
-        if (!board) {
+        if (!boards.has(id)) {
             return false;
         }
+        const board = boards.get(id);
         if (!board.paused) {
             return errors.INVALID_OPERATION;
         }
@@ -76,16 +75,8 @@ module.exports = {
         updateTime(board);
         board.paused = false;
         return board.clients || false;
-    },
-
-    find(id) {
-        return boards.find(board => board.id === id);
     }
 };
-
-const removeBoard = (id) => {
-    boards = boards.filter(board => board.id !== id);
-}
 
 const updateTime = (board) => board.time = new Date();
 
@@ -93,10 +84,17 @@ const automaticClean = () => {
     setInterval(() => {
         // Obtain the boards with an inactivity bigger than the time stablished on TIMEOUT var
         // @TODO And the game is not paused
-        const toRemove = boards.filter(board => {
+        const toRemove = [];
+        for (var entry of boards.entries()) {
+            const timeout = entry[1].paused ? pauseTimeout : inactivityTimeout;
+            if (utils.diffInSeconds(entry[1].time, new Date()) > timeout) {
+                toRemove.push(entry[1]);
+            }
+        }
+        /*const toRemove = boards.filter(board => {
             const timeout = board.paused ? pauseTimeout : inactivityTimeout;
             return utils.diffInSeconds(board.time, new Date()) > timeout;
-        })
+        })*/
         toRemove.forEach(board => {
             if (board.paused) {
                 board.paused = false;
@@ -105,7 +103,7 @@ const automaticClean = () => {
                 return;
             }
             board.clients.forEach(client => client.send('END CONNECTION FOR INACTIVITY'))
-            removeBoard(board.id);
+            boards.delete(board.id);
         })
     }, 1000);
 }

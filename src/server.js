@@ -77,7 +77,7 @@ module.exports = {
                     const [msg, boardId] = message.split(':');
                     const banUser = boards.banClient(boardId, client.id)
                     if (banUser) {
-                        const clients = [...boards.find(boardId).clients];
+                        const clients = [...boards.get(boardId).clients];
                         clients.push(banUser);
                         clients.forEach(item => item.send(messages.BAN_CLIENT + ': ' + client.id));
                         return;
