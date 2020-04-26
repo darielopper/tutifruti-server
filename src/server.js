@@ -77,12 +77,25 @@ module.exports = {
                     const [msg, boardId] = message.split(':');
                     const banUser = boards.banClient(boardId, client.id)
                     if (banUser) {
-                        const clients = [...boards.get(boardId).clients];
+                        const clients = [...boards.find(boardId).clients];
+                        console.log(clients);
                         clients.push(banUser);
                         clients.forEach(item => item.send(messages.BAN_CLIENT + ': ' + client.id));
                         return;
                     }
                     client.send(!banUser ? messages.BOARD_NOT_FOUND : messages.CLIENT_NOT_FOUND);
+                    return;
+                }
+
+                if (message.startsWith(messages.CLIENTS)) {
+                    const [msg, boardId] = message.split(':');
+                    const clients = boards.getClients(boardId);
+                    if (!clients || !boards.hasClient(boardId, client.id)) {
+                        client.send(!clients ? messages.BOARD_NOT_FOUND: messages.CLOSE_BOARD);
+                        return;
+                    }
+                    client.send('Clients: ' + clients.join(', '));
+                    return;
                 }
             })
         });

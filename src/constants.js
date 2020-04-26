@@ -12,6 +12,7 @@ module.exports = {
         INVALID_OPERATION: '$INVALID_OPERATION',
         BAN_CLIENT: '$BAN',
         CLIENT_NOT_FOUND: '$USER_NOT_FOUND',
+        CLIENTS: '$CLIENTS',
     },
 
     errors: {

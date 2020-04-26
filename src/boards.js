@@ -28,11 +28,31 @@ module.exports = {
         return true;
     },
 
+    getClients(id) {
+        if (!boards.has(id)) {
+            return false;
+        }
+        const board = boards.get(id);
+        return board.clients.map(item => item.id);
+    },
+
+    hasClient(boardId, clientId) {
+        if (!boards.has(boardId)) {
+            return false;
+        }
+        const board = boards.get(boardId);
+        return board.clients.some(client => client.id === clientId);
+    },
+
+    find(id) {
+        return boards.has(id) ? boards.get(id) : false;
+    },
+
     banClient(id, clientId) {
         if (!boards.has(id)) {
             return false;
         }
-        const board = board.get(id);
+        const board = boards.get(id);
         const clients = board.clients.filter(boardClient => boardClient.id !== clientId);
         const foundClient = clients.length < board.clients.length;
         if (!foundClient) {
