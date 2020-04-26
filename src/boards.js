@@ -34,13 +34,14 @@ module.exports = {
         if (!board) {
             return false;
         }
-        const clients = board.clients.find(boardClient => boardClient.id !== clientId);
+        const clients = board.clients.filter(boardClient => boardClient.id !== clientId);
         const foundClient = clients.length < board.clients.length;
         if (!foundClient) {
             return errors.CLIENT_NOT_FOUND;
         }
+        const clientToBan = board.clients.find(client => client.id === clientId)
         board.clients = clients;
-        return true;
+        return clientToBan;
     },
 
     pauseGame(id, clientId) {
