@@ -91,10 +91,6 @@ const automaticClean = () => {
                 toRemove.push(entry[1]);
             }
         }
-        /*const toRemove = boards.filter(board => {
-            const timeout = board.paused ? pauseTimeout : inactivityTimeout;
-            return utils.diffInSeconds(board.time, new Date()) > timeout;
-        })*/
         toRemove.forEach(board => {
             if (board.paused) {
                 board.paused = false;
