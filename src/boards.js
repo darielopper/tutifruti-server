@@ -1,13 +1,21 @@
 const utils = require('./utils');
-const {messages, errors, types: GameTypes} = require('./constants');
+const { messages, errors, types: GameTypes, gameLetters } = require('./constants');
 let boards = new Map();
 const inactivityTimeout = process.env.TIMEOUT || 60;
 const pauseTimeout = process.env.PAUSE_TIMEOUT || 20;
 const maxPlayers = process.env.MAX_PLAYER || 2;
+const pointsForAnswer = process.env.POINTS_FOR_ANSWER || 10;
 
 module.exports = {
     add(id) {
-        boards.set(id, { id, time: new Date(), clients: [] });
+        boards.set(id, {
+            id,
+            letter: 'A',
+            letterIndex: 0,
+            time: new Date(),
+            clients: [],
+            answers: new Map()
+        });
     },
 
     addClient(id, client, restrict = false) {
@@ -34,6 +42,50 @@ module.exports = {
         }
         const board = boards.get(id);
         return board.clients.map(item => item.id);
+    },
+
+    setAnswer(boardId, clientId, answer) {
+        if (!boards.has(boardId)) {
+            return false;
+        }
+        const board = boards.get(boardId);
+        const client = board.clients.find(client => client.id === clientId);
+        if (!client) {
+            return errors.CLIENT_NOT_FOUND;
+        }
+        const typeData = answer.split('|')
+        if (typeData.length < 2 ||
+            (typeData.length == 2 && !this.validTypes(typeData[0])) ||
+            (typeData.length == 2 && typeData[1].split(',').length != typeData[0].split(',').length)
+        ) {
+            return errors.INVALID_TYPES;
+        }
+        const answersData = new Map();
+        if (board.answers.has(letter)) {
+            answersData = board.answers.get(letter);
+        }
+        const answerObj = {};
+        let i = 0;
+        for(let key of typeData[0]) {
+            // Start with all points until the clients start disclasiffy
+            answerObj[key] = { value: typeData[i++], points: POINTS_FOR_ANSWER * board.clients.length };
+        }
+        answersData.set(clientId, answerObj);
+        // If all client get their answers
+        if (answersData.keys().length === board.clients.length - 1) {
+            this.updateLetter(board);
+            return true;
+        }
+
+        return true;
+    },
+
+    updateLetter(board) {
+        if (board.letterIndex < gameLetters.length) {
+            board.letter = gameLetters[++board.letterIndex];
+            return;
+        }
+        // TODO Game Over show how wins
     },
 
     setType(boardId, type) {
