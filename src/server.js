@@ -113,7 +113,10 @@ module.exports = {
                         return;
                     }
                     client.send(messages.SET_TYPE);
+                    return;
                 }
+
+                client.send(message + ': ' + messages.COMMAND_INCORRECT);
             })
         });
     }
