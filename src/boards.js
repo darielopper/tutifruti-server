@@ -30,6 +30,7 @@ module.exports = {
             return false;
         }
         client.id = utils.clientId();
+        client.board = id;
         board.clients.push(client);
         updateTime(board);
 

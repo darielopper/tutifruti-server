@@ -13,6 +13,7 @@ module.exports = {
         BAN_CLIENT: '$BAN',
         CLIENT_NOT_FOUND: '$USER_NOT_FOUND',
         CLIENTS: '$CLIENTS',
+        ANSWER: '$ANSWER',
         SET_TYPE: '$SET_TYPE',
         INVALID_TYPES: '$INVALID_TYPES',
         COMMAND_INCORRECT: '$COMMAND_INCORRECT',

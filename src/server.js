@@ -41,8 +41,7 @@ module.exports = {
 
                 // Pause the Game
                 if (message.startsWith(messages.PAUSE_GAME)) {
-                    const [msg, boardId] = message.split(':');
-                    const playerForPause = boardController.pauseGame(boardId, client.id);
+                    const playerForPause = boardController.pauseGame(client.board, client.id);
                     if (utils.isInvalidClientsResult(playerForPause)) {
                         client.send(!playerForPause ? messages.BOARD_NOT_FOUND: messages.INVALID_OPERATION);
                         return;
@@ -55,8 +54,7 @@ module.exports = {
 
                 // Resume the Game
                 if (message.startsWith(messages.RESUME_GAME)) {
-                    const [msg, boardId] = message.split(':');
-                    const playerForResume = boardController.resumeGame(boardId, client.id);
+                    const playerForResume = boardController.resumeGame(client.board, client.id);
                     if (utils.isInvalidClientsResult(playerForResume)) {
                         client.send(!playerForResume ? messages.BOARD_NOT_FOUND : messages.INVALID_OPERATION);
                         return;
@@ -69,8 +67,8 @@ module.exports = {
 
                 // Ban a Client from the Board
                 if (message.startsWith(messages.BAN_CLIENT)) {
-                    const [msg, boardId, clientId] = message.split(':');
-                    const banUser = boardController.banClient(boardId, clientId)
+                    const [msg, clientId] = message.split(':');
+                    const banUser = boardController.banClient(client.board, clientId)
                     if (banUser) {
                         [client, banUser].forEach(item => item.send(messages.BAN_CLIENT));
                         return;
@@ -81,10 +79,9 @@ module.exports = {
 
                 // Leave the Board
                 if (message.startsWith(messages.LEAVE_BOARD)) {
-                    const [msg, boardId] = message.split(':');
-                    const banUser = boardController.banClient(boardId, client.id)
+                    const banUser = boardController.banClient(client.board, client.id)
                     if (banUser) {
-                        const clients = [...boardController.find(boardId).clients];
+                        const clients = [...boardController.find(client.board).clients];
                         clients.push(banUser);
                         clients.forEach(item => item.send(messages.BAN_CLIENT + ': ' + client.id));
                         return;
@@ -95,9 +92,8 @@ module.exports = {
 
                 // Show all clients connected to the same board
                 if (message.startsWith(messages.CLIENTS)) {
-                    const [msg, boardId] = message.split(':');
-                    const clients = boardController.getClients(boardId);
-                    if (!clients || !boardController.hasClient(boardId, client.id)) {
+                    const clients = boardController.getClients(client.board);
+                    if (!clients || !boardController.hasClient(client.board, client.id)) {
                         client.send(!clients ? messages.BOARD_NOT_FOUND: messages.CLOSE_BOARD);
                         return;
                     }
@@ -107,6 +103,17 @@ module.exports = {
 
                 if (message.startsWith(messages.SET_TYPE)) {
                     const [msg, boardId, types] = message.split(':');
+                    const validType = boardController.setType(boardId, types);
+                    if (validType !== true) {
+                        client.send(!validType ? messages.BOARD_NOT_FOUND : messages.INVALID_TYPES);
+                        return;
+                    }
+                    client.send(messages.SET_TYPE);
+                    return;
+                }
+
+                if (message.startsWith(messages.ANSWER)) {
+                    const [msg, boardId, anwser] = message.split(':');
                     const validType = boardController.setType(boardId, types);
                     if (validType !== true) {
                         client.send(!validType ? messages.BOARD_NOT_FOUND : messages.INVALID_TYPES);
