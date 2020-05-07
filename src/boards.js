@@ -44,15 +44,20 @@ module.exports = {
         return board.clients.map(item => item.id);
     },
 
+    getClient(board, clientId) {
+        return board ? board.clients.find(client => client.id === clientId) : null;
+    },
+
     setAnswer(boardId, clientId, answer) {
         if (!boards.has(boardId)) {
             return false;
         }
         const board = boards.get(boardId);
-        const client = board.clients.find(client => client.id === clientId);
+        const client = this.getClient(board, clientId);
         if (!client) {
             return errors.CLIENT_NOT_FOUND;
         }
+        // <group_types>|<answer_types>
         const typeData = answer.split('|')
         if (typeData.length < 2 ||
             (typeData.length == 2 && !this.validTypes(typeData[0])) ||
@@ -61,14 +66,16 @@ module.exports = {
             return errors.INVALID_TYPES;
         }
         const answersData = new Map();
+        const letter = board.letter;
         if (board.answers.has(letter)) {
             answersData = board.answers.get(letter);
         }
-        const answerObj = {};
+        const answerObj = {},
+            answerTypes = typeData[0].split(',');
         let i = 0;
-        for(let key of typeData[0]) {
-            // Start with all points until the clients start disclasiffy
-            answerObj[key] = { value: typeData[i++], points: POINTS_FOR_ANSWER * board.clients.length };
+        for(let key of answerTypes) {
+            // Start with all points until the clients start disclasiffying
+            answerObj[key] = { value: answerTypes[i++], points: POINTS_FOR_ANSWER * board.clients.length };
         }
         answersData.set(clientId, answerObj);
         // If all client get their answers
