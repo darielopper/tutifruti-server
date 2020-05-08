@@ -5,19 +5,11 @@ let ws;
 
 describe('Websocket server unit tests', () => {
     beforeEach(() => {
-        server.start(process.env);
-        ws = new WebSocket(`ws://localhost:${server.port()}`)
-    });
-
-    afterEach(() => {
-        if (server) {
-            if (ws.readyState === ws.OPEN) {
-                ws.off('message', () => {});
-                ws.close();
-            }
-            server.stop();
+        if (!ws) {
+            server.start();
+            ws = new WebSocket(`ws://localhost:${server.port()}`)
         }
-    })
+    });
 
     it('Check server start successfully', (done) => {
         ws.on('open', () => {
