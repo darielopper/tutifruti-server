@@ -4,18 +4,20 @@ const WebSocket = require('ws');
 let ws;
 
 describe('Websocket server unit tests', () => {
-    beforeEach(() => {
+    beforeEach((done) => {
         server.start();
         if (!ws || ws.readyState !== ws.OPEN) {
             ws = new WebSocket(`ws://localhost:${server.port()}`)
         }
+        done();
     });
 
-    afterEach(() => {
+    afterEach((done) => {
         if (ws && ws.readyState === ws.OPEN) {
             ws.close();
         }
         server.stop();
+        done();
     })
 
     it('Check server start successfully', (done) => {
