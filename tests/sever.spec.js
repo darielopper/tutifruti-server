@@ -5,11 +5,18 @@ let ws;
 
 describe('Websocket server unit tests', () => {
     beforeEach(() => {
-        if (!ws) {
-            server.start();
+        server.start();
+        if (!ws || ws.readyState !== ws.OPEN) {
             ws = new WebSocket(`ws://localhost:${server.port()}`)
         }
     });
+
+    afterEach(() => {
+        if (ws && ws.readyState === ws.OPEN) {
+            ws.close();
+        }
+        server.stop();
+    })
 
     it('Check server start successfully', (done) => {
         ws.on('open', () => {
@@ -21,7 +28,7 @@ describe('Websocket server unit tests', () => {
         });
     });
 
-    it('Check server show error if try to join wrong board', () => {
+    /*it('Check server show error if try to join wrong board', () => {
         const messages = [],
             secondMessages = [];
         ws.on('open', () => {
@@ -55,12 +62,14 @@ describe('Websocket server unit tests', () => {
                 }
             });
         })
-    });
+    });*/
 
-    /*it('Check server start board correctly', (done) => {
+    it('Check server start board correctly', (done) => {
         const messages = [],
             secondMessages = [];
+
         ws.on('open', () => {
+            console.log('open');
             ws.send('$START_BOARD');
         });
         ws.on('message', (data) => {
@@ -95,5 +104,5 @@ describe('Websocket server unit tests', () => {
                 }
             });
         })
-    })*/
+    })
 });
