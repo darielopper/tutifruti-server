@@ -25,7 +25,7 @@ describe('Websocket server unit tests', () => {
         });
     });
 
-    /*it('Check server show error if try to join wrong board', () => {
+    it('Check server show error if try to join wrong board', () => {
         const messages = [],
             secondMessages = [];
         ws.on('open', () => {
@@ -43,17 +43,16 @@ describe('Websocket server unit tests', () => {
                     const boardId = 'wrongID';
                     ws2.send(`$JOIN_BOARD:${boardId}`);
                     secondMessages.push(data);
-                    if (secondMessages.length > 1) {
-                        const lastMessage = secondMessages.slice(-1).pop();
-                        expect(lastMessage).to.contain('BOARD_NOT_FOUND');
-                        ws2.close();
-                        ws.close();
-                        done();
+                    if (secondMessages.length < 2) {
+                        return;
                     }
+                    const lastMessage = secondMessages.slice(-1).pop();
+                    expect(lastMessage).to.contain('BOARD_NOT_FOUND');
+                    done();
                 });
             }
         })
-    });*/
+    });
 
     it('Check server start board correctly', (done) => {
         const messages = [],
