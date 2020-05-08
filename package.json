@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --reporter spec tests/"
+    "test": "cross-env NODE_ENV=test ./node_modules/.bin/mocha --reporter spec tests/ --exit"
   },
   "keywords": [
     "game",
