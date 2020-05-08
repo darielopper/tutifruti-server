@@ -5,6 +5,7 @@ const inactivityTimeout = process.env.TIMEOUT || 60;
 const pauseTimeout = process.env.PAUSE_TIMEOUT || 20;
 const maxPlayers = process.env.MAX_PLAYER || 2;
 const pointsForAnswer = process.env.POINTS_FOR_ANSWER || 10;
+const selectedType = process.env.SELECTED_TYPE || 'simple';
 
 module.exports = {
     add(id) {
@@ -169,7 +170,7 @@ module.exports = {
     }
 };
 
-const validTypes = (types) => types.split(',').every(type => GameTypes.all.split(',').includes(type));
+const validTypes = (types) => types.split(',').every(type => GameTypes[selectedType].split(',').includes(type));
 
 const updateTime = (board) => board.time = new Date();
 

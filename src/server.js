@@ -113,8 +113,9 @@ module.exports = {
                 }
 
                 if (message.startsWith(messages.ANSWER)) {
-                    const [msg, boardId, anwser] = message.split(':');
-                    const validType = boardController.setType(boardId, types);
+                    const [msg, anwser] = message.split(':');
+                    const answerParts = anwser.split('|');
+                    const validType = boardController.setType(client.board, answerParts[messages.TYPE]);
                     if (validType !== true) {
                         client.send(!validType ? messages.BOARD_NOT_FOUND : messages.INVALID_TYPES);
                         return;

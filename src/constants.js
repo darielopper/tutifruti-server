@@ -17,6 +17,8 @@ module.exports = {
         SET_TYPE: '$SET_TYPE',
         INVALID_TYPES: '$INVALID_TYPES',
         COMMAND_INCORRECT: '$COMMAND_INCORRECT',
+        TYPE: 0,
+        ANSWER: 1
     },
 
     errors: {
@@ -27,6 +29,7 @@ module.exports = {
 
     types: {
         all: 'fruit,country,name,color,animal,thing,last_name,plant,carreer',
+        simple: 'name,color,country'
     },
 
     gameLetters: 'ABCDEFGHIJQLMNÑOPQRSTUVWXYZ'.split('')
