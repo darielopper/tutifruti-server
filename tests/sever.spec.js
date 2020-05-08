@@ -1,40 +1,93 @@
 const expect = require('chai').expect;
 const server = require('../src/server');
 const WebSocket = require('ws');
-let ws;
+let ws, ws2, ws3;
 
 describe('Websocket server unit tests', () => {
-    beforeEach((done) => {
+    before(() => {
         server.start();
-        if (!ws || ws.readyState !== ws.OPEN) {
-            ws = new WebSocket(`ws://localhost:${server.port()}`)
-        }
-        done();
+        ws = new WebSocket(`ws://localhost:${server.port()}`);
+        ws2 = new WebSocket(`ws://localhost:${server.port()}`);
+        ws3 = new WebSocket(`ws://localhost:${server.port()}`);
     });
 
-    afterEach((done) => {
+    after(() => {
         if (ws && ws.readyState === ws.OPEN) {
             ws.close();
         }
+        if (ws2 && ws.readyState === ws2.OPEN) {
+            ws2.close();
+        }
+        if (ws3 && ws.readyState === ws3.OPEN) {
+            ws3.close();
+        }
         server.stop();
-        done();
     })
 
     it('Check server start successfully', (done) => {
-        ws.on('open', () => {
-            expect(ws.OPEN).to.be.equal(1);
-        });
-        ws.on('message', (message) => {
+        const listener = (message) => {
             expect(message).to.equal('Connection successfully');
+            ws.off('message', listener);
             done();
-        });
+        };
+        ws.on('message', listener);
     });
 
-    /*it('Check server show error if try to join wrong board', () => {
-        const messages = [],
+    it('Show close board if client is not connected yet', (done) => {
+        const listener = (message) => {
+            expect(message).to.contain('CLOSE_BOARD');
+            ws.off('message', listener);
+            done();
+        };
+        ws.on('message', listener);
+        ws.send('$WHO');
+    });
+
+    it('Check client start successfully a board', (done) => {
+        const listener = (message) => {
+            const data = JSON.parse(message);
+            expect(data.board).to.match(/^\w{6,}$/);
+            expect(data.client).to.match(/^\w{3,}(-\w{3,}){2,}$/);
+            ws.off('message', listener);
+            done();
+        };
+        ws.on('message', listener);
+        ws.send('$START_BOARD');
+    });
+
+    it('Check invalid command send a message to the client', (done) => {
+        const listener = (message) => {
+            expect(message).to.contain('COMMAND_INCORRECT');
+            ws.off('message', listener);
+            done();
+        };
+        ws.on('message', listener);
+        ws.send('$SOME_COMMAND');
+    });
+
+    it('Check client can join to a board', (done) => {
+        const listener = (message) => {
+            const jsonData = JSON.parse(message);
+            expect(!!jsonData).to.true;
+            ws.off('message', listener);
+            ws2.send(`$JOIN_BOARD:${jsonData.board}`)
+        };
+        const listener2 = (message) => {
+            expect(message).to.contain('ClientId');
+            ws2.off('message', listener2);
+            done();
+        };
+        ws.on('message', listener);
+        ws2.on('message', listener2);
+        ws.send('$START_BOARD');
+    });
+
+    it.skip('Check server show error if try to join wrong board', () => {
+        /*const messages = [],
             secondMessages = [];
         ws.on('open', () => {
-            ws.send('$START_BOARD');
+            console.log('here');
+            ws.send('$START_BOARDs');
         });
         ws.on('message', (data) => {
             messages.push(data);
@@ -63,10 +116,18 @@ describe('Websocket server unit tests', () => {
                     done();
                 }
             });
-        })
-    });*/
+        })*/
+        /*ws.on('open', (done) => {
+            ws.on('message', () => {
+                console.log('here');
+                //done();
+            });
+            ws.send('$START_BOARDs');
+            expect(2).to.eq(23);
+        });*/
+    });
 
-    it('Check server start board correctly', (done) => {
+    it.skip('Check server start board correctly', (done) => {
         const messages = [],
             secondMessages = [];
 
