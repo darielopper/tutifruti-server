@@ -82,7 +82,7 @@ describe('Websocket server unit tests', () => {
         ws.send('$START_BOARD');
     });
 
-    it('Check server show error if try to join wrong board', () => {
+    it.skip('Check server show error if try to join wrong board', () => {
         const listener = (message) => {
             const jsonData = JSON.parse(message);
             expect(!!jsonData).to.true;
