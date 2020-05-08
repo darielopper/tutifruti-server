@@ -39,6 +39,7 @@ describe('Websocket server unit tests', () => {
             messages.push(data);
             if (messages.length == 1) {
                 expect(messages[0]).to.equal('Connection successfully');
+                done();
                 return;
             }
             if (messages.length == 2) {
