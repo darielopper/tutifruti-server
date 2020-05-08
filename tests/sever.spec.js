@@ -46,6 +46,8 @@ describe('Websocket server unit tests', () => {
                     if (secondMessages.length > 1) {
                         const lastMessage = secondMessages.slice(-1).pop();
                         expect(lastMessage).to.contain('BOARD_NOT_FOUND');
+                        ws2.close();
+                        ws.close();
                         done();
                     }
                 });
@@ -87,6 +89,8 @@ describe('Websocket server unit tests', () => {
                     const lastMessage = secondMessages.slice(-1).pop();
                     expect(lastMessage).to.contain('ClientId:');
                     expect(lastMessage).to.match(/:\s\w{3,}(-\w{3,}){2,}$/);
+                    ws2.close();
+                    ws.close();
                     done();
                 }
             });
