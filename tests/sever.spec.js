@@ -12,6 +12,7 @@ describe('Websocket server unit tests', () => {
     afterEach(() => {
         if (server) {
             if (ws.readyState === ws.OPEN) {
+                ws.off('message', () => {});
                 ws.close();
             }
             server.stop();
@@ -51,7 +52,6 @@ describe('Websocket server unit tests', () => {
                     }
                     const lastMessage = secondMessages.slice(-1).pop();
                     expect(lastMessage).to.contain('BOARD_NOT_FOUND');
-                    ws2.close();
                     done();
                 });
             }
