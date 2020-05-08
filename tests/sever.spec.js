@@ -25,7 +25,7 @@ describe('Websocket server unit tests', () => {
         });
     });
 
-    it('Check server show error if try to join wrong board', () => {
+    /*it('Check server show error if try to join wrong board', () => {
         const messages = [],
             secondMessages = [];
         ws.on('open', () => {
@@ -53,7 +53,7 @@ describe('Websocket server unit tests', () => {
                 });
             }
         })
-    });
+    });*/
 
     it('Check server start board correctly', (done) => {
         const messages = [],
@@ -89,8 +89,6 @@ describe('Websocket server unit tests', () => {
                     const lastMessage = secondMessages.slice(-1).pop();
                     expect(lastMessage).to.contain('ClientId:');
                     expect(lastMessage).to.match(/:\s\w{3,}(-\w{3,}){2,}$/);
-                    ws2.close();
-                    ws.close();
                     done();
                 }
             });
