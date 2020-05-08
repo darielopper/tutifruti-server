@@ -48,6 +48,7 @@ describe('Websocket server unit tests', () => {
                     }
                     const lastMessage = secondMessages.slice(-1).pop();
                     expect(lastMessage).to.contain('BOARD_NOT_FOUND');
+                    ws2.close();
                     done();
                 });
             }
