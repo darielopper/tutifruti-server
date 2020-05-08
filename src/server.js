@@ -2,23 +2,24 @@ const WebSocket = require('ws');
 const utils = require('./utils');
 const boardController = require('./boards');
 const {messages, errors} = require('./constants');
+const Logger = require('./log');
 
 let ws;
 const port = process.env.PORT || 8081
 
 module.exports = {
-    start() {
+    start(processEnv) {
         ws = new WebSocket.Server({
             port
         });
 
         ws.on('connection', function open(client) {
-            console.log('Connected 1 client');
+            Logger.info('Connected 1 client');
             client.send('Connection successfully');
-            console.log('Send data');
+            Logger.info('Send data');
 
             client.on('message', function incomming(message) {
-                console.log(message);
+                Logger.info(message);
 
                 // Start the Board
                 if (message === messages.START_BOARD) {
@@ -127,5 +128,13 @@ module.exports = {
                 client.send(message + ': ' + messages.COMMAND_INCORRECT);
             })
         });
+    },
+
+    stop() {
+        ws.close();
+    },
+
+    port() {
+        return port;
     }
 }
