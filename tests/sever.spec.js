@@ -11,6 +11,9 @@ describe('Websocket server unit tests', () => {
 
     afterEach(() => {
         if (server) {
+            if (ws.readyState === ws.OPEN) {
+                ws.close();
+            }
             server.stop();
         }
     })
