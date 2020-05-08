@@ -28,7 +28,7 @@ describe('Websocket server unit tests', () => {
         });
     });
 
-    /*it('Check server show error if try to join wrong board', () => {
+    it('Check server show error if try to join wrong board', () => {
         const messages = [],
             secondMessages = [];
         ws.on('open', () => {
@@ -62,7 +62,7 @@ describe('Websocket server unit tests', () => {
                 }
             });
         })
-    });*/
+    });
 
     it('Check server start board correctly', (done) => {
         const messages = [],
