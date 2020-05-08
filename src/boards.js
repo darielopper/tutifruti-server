@@ -171,7 +171,7 @@ module.exports = {
 
 const validTypes = (types) => types.split(',').every(type => GameTypes[selectedType].split(',').includes(type))
 
-const updateTime = (board) => board.time = new Date()
+const updateTime = (board) => (board.time = new Date())
 
 const automaticClean = () => {
   setInterval(() => {
