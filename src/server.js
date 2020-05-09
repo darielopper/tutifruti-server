@@ -16,7 +16,6 @@ module.exports = {
     ws.on('connection', function open (client) {
       Logger.info('Connected 1 client')
       client.send('Connection successfully')
-      Logger.info('Send data')
 
       client.on('message', function incomming (message) {
         Logger.info(message)

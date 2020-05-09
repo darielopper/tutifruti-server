@@ -30,7 +30,8 @@ describe('Websocket server unit tests', () => {
             ws.off('message', listener);
             done();
         };
-        ws.on('message', listener);
+        ws.once('message', (message) => expect(message).to.equal('Connection successfully'));
+        done();
     });
 
     it('Show close board if client is not connected yet', (done) => {
@@ -82,15 +83,15 @@ describe('Websocket server unit tests', () => {
         ws.send('$START_BOARD');
     });
 
-    it.skip('Check server show error if try to join wrong board', () => {
+    it('Check server show error if try to join wrong board', (done) => {
         const listener = (message) => {
             const jsonData = JSON.parse(message);
             expect(!!jsonData).to.true;
+            ws2.send('$JOIN_BOARD:wrongBoard');
             ws.off('message', listener);
-            ws2.send(`$JOIN_BOARD:wrongBoard`)
         };
         const listener2 = (message) => {
-            expect(message).to.contain('BOARD_NOT_FOUND');
+            expect(message).to.contain('CLOSE_BOARD');
             ws2.off('message', listener2);
             done();
         };
