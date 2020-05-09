@@ -1,8 +1,8 @@
 const utils = require('./utils')
 const { messages, errors, types: GameTypes, gameLetters } = require('./constants')
 const boards = new Map()
-const inactivityTimeout = process.env.TIMEOUT || 3600
-const pauseTimeout = process.env.PAUSE_TIMEOUT || 20
+const inactivityTimeout = process.env.TIMEOUT || (process.env.NODE_ENV === 'test' ? 3600 : 60)
+const pauseTimeout = process.env.PAUSE_TIMEOUT || (process.env.NODE_ENV === 'test' ? 40 : 20)
 const maxPlayers = process.env.MAX_PLAYER || 2
 const pointsForAnswer = process.env.POINTS_FOR_ANSWER || 10
 const selectedType = process.env.SELECTED_TYPE || 'simple'
