@@ -96,7 +96,7 @@ describe('Test to check connection, game starts and joinments', () => {
         ws.send('$START_BOARD')
     })
 
-    it('Check that a client can change the board TIMEOUT', (done) => {
+    it('Check that a client can change the board timeout', (done) => {
         const messages = []
         const listener = (message) => {
             messages.push(message)
