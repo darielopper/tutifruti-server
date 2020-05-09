@@ -111,7 +111,7 @@ module.exports = {
         }
 
         // Show all clients connected to the same board
-        if (message.startsWith(messages.CLIENTS)) {
+        if (message == messages.CLIENTS) {
           const clients = boardController.getClients(client.board)
           if (!clients || !boardController.hasClient(client.board, client.id)) {
             client.send(!clients ? messages.BOARD_NOT_FOUND : messages.CLOSE_BOARD)

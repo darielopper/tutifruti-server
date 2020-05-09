@@ -96,6 +96,53 @@ describe('Test to check connection, game starts and joinments', () => {
         ws.send('$START_BOARD')
     })
 
+    it('Check client can join to a board', (done) => {
+        const listener = (message) => {
+            const jsonData = JSON.parse(message)
+            expect(!!jsonData).to.true
+            ws.off('message', listener)
+            ws2.send(`$JOIN_BOARD:${jsonData.board}`)
+        }
+        const listener2 = (message) => {
+            expect(message).to.contain('ClientId')
+            ws2.off('message', listener2)
+            done()
+        }
+        ws.on('message', listener)
+        ws2.on('message', listener2)
+        ws.send('$START_BOARD')
+    })
+
+    it('Get clients list correctly', (done) => {
+        const messages = []
+        let wClient, w2Client
+        const listener = (message) => {
+            const jsonData = JSON.parse(message)
+            expect(!!jsonData).to.true
+            wClient = jsonData.client
+            ws.off('message', listener)
+            ws2.send(`$JOIN_BOARD:${jsonData.board}`)
+        }
+        const listener2 = (message) => {
+            messages.push(message)
+            if (messages.length == 1) {
+                expect(message).to.contain('ClientId')
+                w2Client = message.split(':').pop().trim()
+                ws2.send('$CLIENTS')
+                return
+            }
+            const clients = message.split(':').pop().split(',').map(item => item.trim())
+            expect(clients.length).to.eq(2)
+            expect(clients[0]).to.equal(wClient)
+            expect(clients[1]).to.equal(w2Client)
+            ws2.off('message', listener2)
+            done()
+        }
+        ws.on('message', listener)
+        ws2.on('message', listener2)
+        ws.send('$START_BOARD')
+    })
+
     it('Check that a client can change the board timeout', (done) => {
         const messages = []
         const listener = (message) => {
