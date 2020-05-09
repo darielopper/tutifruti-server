@@ -70,4 +70,53 @@ describe('Test to check board status and client connected', () => {
         ws.on('message', listener)
         ws.send('$START_BOARD')
     })
+
+    it('Check client can resume the game', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(messages)
+            if (messages.length == 1) {
+                const json = JSON.parse(message)
+                expect(!!json).to.true
+                ws.send("$PAUSE_GAME")
+                return
+            }
+            if (messages.length == 2) {
+                expect(message).to.contain('GAME_PAUSED')
+                ws.send("$RESUME_GAME")
+                return
+            }
+            expect(message).to.contain('GAME_RESUMED')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
+
+    it('Check board automatic resume the game after rich pause timeout', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(messages)
+            if (messages.length == 1) {
+                const json = JSON.parse(message)
+                expect(!!json).to.true
+                ws.send("$PAUSE_GAME")
+                return
+            }
+            if (messages.length == 2) {
+                expect(message).to.contain('GAME_PAUSED')
+                let date = new Date()
+                while ((new Date().getTime() - date.getTime()) / 1000 < 5) {
+                    continue;
+                }
+                return
+            }
+            expect(message).to.contain('GAME_RESUMED')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
 })
