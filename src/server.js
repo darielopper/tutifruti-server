@@ -16,7 +16,6 @@ module.exports = {
     ws.on('connection', function open (client) {
       Logger.info('Connected 1 client')
       client.send('Connection successfully')
-      Logger.info('Send data')
 
       client.on('message', function incomming (message) {
         Logger.info(message)
@@ -25,8 +24,7 @@ module.exports = {
         if (message === messages.START_BOARD) {
           const id = utils.uniqueId()
           boardController.addClient(id, client)
-          client.send('BoardId: ' + id)
-          client.send('ClientId: ' + client.id)
+          client.send(JSON.stringify({ board: id, client: client.id }))
           return
         }
 
@@ -35,6 +33,16 @@ module.exports = {
           const boardId = message.split(':').pop()
           if (!boardController.addClient(boardId, client, true)) {
             client.send(messages.CLOSE_BOARD)
+          }
+          client.send('ClientId: ' + client.id)
+          return
+        }
+
+        // Get client id
+        if (message.startsWith(messages.CLIENT)) {
+          if (!client.board) {
+            client.send(messages.CLOSE_BOARD)
+            return
           }
           client.send('ClientId: ' + client.id)
           return
