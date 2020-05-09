@@ -1,102 +1,98 @@
-const expect = require('chai').expect;
-const server = require('../src/server');
-const WebSocket = require('ws');
-let ws, ws2, ws3;
+const expect = require('chai').expect
+const server = require('../src/server')
+const WebSocket = require('ws')
+let ws, ws2, ws3
 
 describe('Websocket server unit tests', () => {
     before(() => {
-        server.start();
-        ws = new WebSocket(`ws://localhost:${server.port()}`);
-        ws2 = new WebSocket(`ws://localhost:${server.port()}`);
-        ws3 = new WebSocket(`ws://localhost:${server.port()}`);
+        server.start()
+        const uri = `ws://localhost:${server.port()}`
+        ws = new WebSocket(uri)
+        ws2 = new WebSocket(uri)
+        ws3 = new WebSocket(uri)
     });
 
     after(() => {
         if (ws && ws.readyState === ws.OPEN) {
-            ws.close();
+            ws.close()
         }
         if (ws2 && ws.readyState === ws2.OPEN) {
-            ws2.close();
+            ws2.close()
         }
         if (ws3 && ws.readyState === ws3.OPEN) {
-            ws3.close();
+            ws3.close()
         }
-        server.stop();
+        server.stop()
     })
 
     it('Check server start successfully', (done) => {
-        const listener = (message) => {
-            expect(message).to.equal('Connection successfully');
-            ws.off('message', listener);
-            done();
-        };
-        ws.once('message', (message) => expect(message).to.equal('Connection successfully'));
-        done();
-    });
+        ws.once('message', (message) => expect(message).to.equal('Connection successfully'))
+        done()
+    })
 
     it('Show close board if client is not connected yet', (done) => {
         const listener = (message) => {
-            expect(message).to.contain('CLOSE_BOARD');
-            ws.off('message', listener);
-            done();
-        };
-        ws.on('message', listener);
-        ws.send('$WHO');
-    });
+            expect(message).to.contain('CLOSE_BOARD')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$WHO')
+    })
 
     it('Check client start successfully a board', (done) => {
         const listener = (message) => {
-            const data = JSON.parse(message);
-            expect(data.board).to.match(/^\w{6,}$/);
-            expect(data.client).to.match(/^\w{3,}(-\w{3,}){2,}$/);
-            ws.off('message', listener);
-            done();
-        };
-        ws.on('message', listener);
-        ws.send('$START_BOARD');
-    });
+            const data = JSON.parse(message)
+            expect(data.board).to.match(/^\w{6,}$/)
+            expect(data.client).to.match(/^\w{3,}(-\w{3,}){2,}$/)
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
 
     it('Check invalid command send a message to the client', (done) => {
         const listener = (message) => {
-            expect(message).to.contain('COMMAND_INCORRECT');
-            ws.off('message', listener);
-            done();
-        };
-        ws.on('message', listener);
-        ws.send('$SOME_COMMAND');
-    });
+            expect(message).to.contain('COMMAND_INCORRECT')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$SOME_COMMAND')
+    })
 
     it('Check client can join to a board', (done) => {
         const listener = (message) => {
-            const jsonData = JSON.parse(message);
-            expect(!!jsonData).to.true;
-            ws.off('message', listener);
+            const jsonData = JSON.parse(message)
+            expect(!!jsonData).to.true
+            ws.off('message', listener)
             ws2.send(`$JOIN_BOARD:${jsonData.board}`)
-        };
+        }
         const listener2 = (message) => {
-            expect(message).to.contain('ClientId');
-            ws2.off('message', listener2);
-            done();
-        };
-        ws.on('message', listener);
-        ws2.on('message', listener2);
-        ws.send('$START_BOARD');
-    });
+            expect(message).to.contain('ClientId')
+            ws2.off('message', listener2)
+            done()
+        }
+        ws.on('message', listener)
+        ws2.on('message', listener2)
+        ws.send('$START_BOARD')
+    })
 
     it('Check server show error if try to join wrong board', (done) => {
         const listener = (message) => {
-            const jsonData = JSON.parse(message);
-            expect(!!jsonData).to.true;
-            ws2.send('$JOIN_BOARD:wrongBoard');
-            ws.off('message', listener);
-        };
+            const jsonData = JSON.parse(message)
+            expect(!!jsonData).to.true
+            ws2.send('$JOIN_BOARD:wrongBoard')
+            ws.off('message', listener)
+        }
         const listener2 = (message) => {
-            expect(message).to.contain('CLOSE_BOARD');
-            ws2.off('message', listener2);
-            done();
-        };
-        ws.on('message', listener);
-        ws2.on('message', listener2);
-        ws.send('$START_BOARD');
-    });
-});
+            expect(message).to.contain('CLOSE_BOARD')
+            ws2.off('message', listener2)
+            done()
+        }
+        ws.on('message', listener)
+        ws2.on('message', listener2)
+        ws.send('$START_BOARD')
+    })
+})
