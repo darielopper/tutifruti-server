@@ -14,6 +14,7 @@ module.exports = {
       letter: 'A',
       letterIndex: 0,
       time: new Date(),
+      timeout: inactivityTimeout,
       clients: [],
       answers: new Map()
     })
@@ -35,6 +36,16 @@ module.exports = {
     board.clients.push(client)
     updateTime(board)
 
+    return true
+  },
+
+  setTimeout(id, timeout) {
+    if (!boards.has(id)) {
+      return false
+    }
+    const board = boards.get(id)
+    board.timeout = timeout
+    updateTime(board)
     return true
   },
 
@@ -179,7 +190,7 @@ const automaticClean = () => {
     // @TODO And the game is not paused
     const toRemove = []
     for (var entry of boards.entries()) {
-      const timeout = entry[1].paused ? pauseTimeout : inactivityTimeout
+      const timeout = entry[1].paused ? pauseTimeout : entry[1].timeout
       if (utils.diffInSeconds(entry[1].time, new Date()) > timeout) {
         toRemove.push(entry[1])
       }
@@ -191,7 +202,7 @@ const automaticClean = () => {
         board.clients.forEach(client => client.send(messages.GAME_RESUMED))
         return
       }
-      board.clients.forEach(client => client.send('END CONNECTION FOR INACTIVITY'))
+      board.clients.forEach(client => client.send(messages.INACTIVITY))
       boards.delete(board.id)
     })
   }, 1000)

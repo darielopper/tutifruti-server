@@ -95,4 +95,32 @@ describe('Websocket server unit tests', () => {
         ws2.on('message', listener2)
         ws.send('$START_BOARD')
     })
+
+    it('Check that a client can change the board TIMEOUT', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length == 1) {
+                const jsonData = JSON.parse(message)
+                expect(!!jsonData).to.true
+                ws.send('$SET_TIMEOUT:5')
+                return
+            }
+            if (messages.length == 2) {
+                expect(message).to.equal('$SET_TIMEOUT')
+                let date = new Date()
+                while ((new Date().getTime() - date.getTime()) / 1000 < 5) {
+                    continue;
+                }
+                return
+            }
+            if (messages.length > 2) {
+                expect(message).to.contain('END CONNECTION FOR INACTIVITY')
+                ws.off('message', listener)
+                done()
+            }
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
 })

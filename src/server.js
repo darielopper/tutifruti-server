@@ -38,6 +38,17 @@ module.exports = {
           return
         }
 
+        // Change inactivity timeout to a board
+        if (message.startsWith(messages.SET_TIMEOUT)) {
+          const timeout = message.split(':').pop().trim()
+          if (!client.board || !boardController.setTimeout(client.board, timeout)) {
+            client.send(messages.CLOSE_BOARD)
+            return
+          }
+          client.send(messages.SET_TIMEOUT)
+          return
+        }
+
         // Get client id
         if (message.startsWith(messages.CLIENT)) {
           if (!client.board) {
