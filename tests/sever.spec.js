@@ -1,15 +1,15 @@
 const expect = require('chai').expect
 const server = require('../src/server')
-const WebSocket = require('ws')
+const webSocket = require('ws')
 let ws, ws2, ws3
 
-describe('Websocket server unit tests', () => {
+describe('Test to check connection, game starts and joinments', () => {
     before(() => {
         server.start()
         const uri = `ws://localhost:${server.port()}`
-        ws = new WebSocket(uri)
-        ws2 = new WebSocket(uri)
-        ws3 = new WebSocket(uri)
+        ws = new webSocket(uri)
+        ws2 = new webSocket(uri)
+        ws3 = new webSocket(uri)
     });
 
     after(() => {

@@ -50,7 +50,7 @@ module.exports = {
         }
 
         // Get client id
-        if (message.startsWith(messages.CLIENT)) {
+        if (message === messages.CLIENT) {
           if (!client.board) {
             client.send(messages.CLOSE_BOARD)
             return
@@ -60,7 +60,7 @@ module.exports = {
         }
 
         // Pause the Game
-        if (message.startsWith(messages.PAUSE_GAME)) {
+        if (message === messages.PAUSE_GAME) {
           const playerForPause = boardController.pauseGame(client.board, client.id)
           if (utils.isInvalidClientsResult(playerForPause)) {
             client.send(!playerForPause ? messages.BOARD_NOT_FOUND : messages.INVALID_OPERATION)
@@ -73,7 +73,7 @@ module.exports = {
         }
 
         // Resume the Game
-        if (message.startsWith(messages.RESUME_GAME)) {
+        if (message === messages.RESUME_GAME) {
           const playerForResume = boardController.resumeGame(client.board, client.id)
           if (utils.isInvalidClientsResult(playerForResume)) {
             client.send(!playerForResume ? messages.BOARD_NOT_FOUND : messages.INVALID_OPERATION)
