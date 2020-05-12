@@ -1,5 +1,6 @@
 const expect = require('chai').expect
 const server = require('../src/server')
+const { types } = require('../src/constants')
 const webSocket = require('ws')
 let ws, ws2, ws3
 
@@ -23,5 +24,36 @@ describe('Test to check the main logic of the game', () => {
             ws3.close()
         }
         server.stop()
+    })
+
+    it('Check server start successfully', (done) => {
+        ws.once('message', (message) => expect(message).to.equal('Connection successfully'))
+        done()
+    })
+
+    it('Client can change game type successfully', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length === 1) {
+                const jsonData = JSON.parse(message)
+                expect(!!jsonData).to.true
+                ws.send('$SET_TYPE:' + types.simple)
+                return
+            }
+            if (messages.length === 2) {
+                expect(message).to.contain('SET_TYPE')
+                ws.send('$TYPE')
+                return
+            }
+            if (messages.length === 3) {
+                expect(message).to.contain('TYPE')
+                expect(message.split(' ').pop()).to.eq(types.simple)
+                ws.off('message', listener)
+                done()
+            }
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
     })
 })

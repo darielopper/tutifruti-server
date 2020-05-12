@@ -118,6 +118,13 @@ module.exports = {
     return true
   },
 
+  getType (boardId) {
+    if (!boards.has(boardId)) {
+      return false
+    }
+    return boards.get(boardId).type
+  },
+
   hasClient (boardId, clientId) {
     if (!boards.has(boardId)) {
       return false
