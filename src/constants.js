@@ -6,6 +6,7 @@ module.exports = {
     CLOSE_BOARD: '$CLOSE_BOARD',
     BOARD_NOT_FOUND: '$BOARD_NOT_FOUND',
     CLIENT: '$WHO',
+    TYPE: '$TYPE',
     SET_TIMEOUT: '$SET_TIMEOUT',
     GAME_PAUSED: '$GAME_PAUSED',
     PAUSE_GAME: '$PAUSE_GAME',

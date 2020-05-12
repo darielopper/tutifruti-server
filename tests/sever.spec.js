@@ -96,23 +96,6 @@ describe('Test to check connection, game starts and joinments', () => {
         ws.send('$START_BOARD')
     })
 
-    it('Check client can join to a board', (done) => {
-        const listener = (message) => {
-            const jsonData = JSON.parse(message)
-            expect(!!jsonData).to.true
-            ws.off('message', listener)
-            ws2.send(`$JOIN_BOARD:${jsonData.board}`)
-        }
-        const listener2 = (message) => {
-            expect(message).to.contain('ClientId')
-            ws2.off('message', listener2)
-            done()
-        }
-        ws.on('message', listener)
-        ws2.on('message', listener2)
-        ws.send('$START_BOARD')
-    })
-
     it('Get clients list correctly', (done) => {
         const messages = []
         let wClient, w2Client
