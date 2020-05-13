@@ -39,7 +39,7 @@ module.exports = {
     return true
   },
 
-  setTimeout(id, timeout) {
+  setTimeout (id, timeout) {
     if (!boards.has(id)) {
       return false
     }
@@ -116,6 +116,13 @@ module.exports = {
     }
     boards.get(boardId).type = type
     return true
+  },
+
+  getType (boardId) {
+    if (!boards.has(boardId)) {
+      return false
+    }
+    return boards.get(boardId).type
   },
 
   hasClient (boardId, clientId) {

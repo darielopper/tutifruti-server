@@ -111,7 +111,7 @@ module.exports = {
         }
 
         // Show all clients connected to the same board
-        if (message.startsWith(messages.CLIENTS)) {
+        if (message === messages.CLIENTS) {
           const clients = boardController.getClients(client.board)
           if (!clients || !boardController.hasClient(client.board, client.id)) {
             client.send(!clients ? messages.BOARD_NOT_FOUND : messages.CLOSE_BOARD)
@@ -121,14 +121,26 @@ module.exports = {
           return
         }
 
+        // Change Game Type by a client
         if (message.startsWith(messages.SET_TYPE)) {
-          const [boardId, types] = message.split(':').slice(1)
-          const validType = boardController.setType(boardId, types)
+          const types = message.split(':').pop()
+          const validType = boardController.setType(client.board, types)
           if (validType !== true) {
             client.send(!validType ? messages.BOARD_NOT_FOUND : messages.INVALID_TYPES)
             return
           }
           client.send(messages.SET_TYPE)
+          return
+        }
+
+        // Get Game Type by a client
+        if (message === messages.TYPE) {
+          const type = boardController.getType(client.board)
+          if (!type) {
+            client.send(messages.BOARD_NOT_FOUND)
+            return
+          }
+          client.send(messages.TYPE + ' ' + type)
           return
         }
 
