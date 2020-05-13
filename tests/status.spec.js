@@ -119,4 +119,61 @@ describe('Test to check board status and client connected', () => {
         ws.on('message', listener)
         ws.send('$START_BOARD')
     })
+
+    it('Check that a client can leave a board', (done) => {
+        const messages = [];
+        let clientId;
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length == 1) {
+                const json = JSON.parse(messages)
+                clientId = json.client
+                expect(!!json).to.true
+                ws.send('$LEAVE')
+                return
+            }
+            expect(message).to.contain('BAN')
+            expect(message.split(':').pop().trim()).to.equal(clientId)
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
+
+    it('Check that a client can ban another client from a board', (done) => {
+        const messages = [], messages2 = [];
+        let clientId;
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length == 1) {
+                const json = JSON.parse(messages)
+                clientId = json.client
+                expect(!!json).to.true
+                ws2.send(`$JOIN_BOARD:${json.board}`)
+                return
+            }
+            if (messages.length == 2) {
+                expect(message).to.contain('BAN')
+                ws.send('$CLIENTS')
+                return
+            }
+            expect(message).to.contain('CLOSE_BOARD')
+            ws.off('message', listener)
+            done()
+        }
+        const listener2 = (message) => {
+            messages2.push(message)
+            if (messages2.length === 1) {
+                expect(message).to.contain('ClientId')
+                ws2.send(`$BAN:${clientId}`)
+                return
+            }
+            expect(message).to.contain('BAN')
+            ws2.off('message', listener2)
+        }
+        ws.on('message', listener)
+        ws2.on('message', listener2)
+        ws.send('$START_BOARD')
+    })
 })
