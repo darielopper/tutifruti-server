@@ -115,19 +115,19 @@ module.exports = {
       return errors.INVALID_TYPES
     }
     const wrongClients = wrongs.split(',')
-    for (let client of wrongClients) {
+    for (const client of wrongClients) {
       if (!this.getClient(board, client)) {
         return errors.CLIENT_NOT_FOUND
       }
     }
     let answers
-    for (let client of wrongClients) {
+    for (const client of wrongClients) {
       if (wrongClients === clientId) continue
       answers = [...board.answers.values()].pop()
       if (!answers) {
         return errors.NOT_ANSWERS_YET
       }
-      let answerData = answers.get(client)
+      const answerData = answers.get(client)
       answerData[type].points -= pointsForAnswer
     }
     return true
@@ -141,7 +141,7 @@ module.exports = {
     const answers = [...board.answers.values()].pop()
     const clients = [...answers.keys()]
     const lastAnswer = [...answers.values()]
-    return lastAnswer.map((answer, index) => ({ client: clients[index], points: Object.values(answer).reduce((total, item) => total += item.points, 0)}))
+    return lastAnswer.map((answer, index) => ({ client: clients[index], points: Object.values(answer).reduce((total, item) => (total += item.points), 0) }))
   },
 
   updateLetter (board) {
@@ -228,14 +228,12 @@ module.exports = {
     updateTime(board)
     board.paused = false
     return board.clients || false
-  },
+  }
 }
 
 const validTypes = (types) => types.split(',').every(type => GameTypes[selectedType].split(',').includes(type))
 
 const updateTime = (board) => (board.time = new Date())
-
-const hasAllAnswer = (board) => [...board.answers.values()].keys().length === board.clients.length
 
 const automaticClean = () => {
   setInterval(() => {
