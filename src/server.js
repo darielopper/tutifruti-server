@@ -1,7 +1,7 @@
 const WebSocket = require('ws')
 const utils = require('./utils')
 const boardController = require('./boards')
-const { messages, TYPE, errors } = require('./constants')
+const { messages, errors } = require('./constants')
 const Logger = require('./log')
 
 let ws
