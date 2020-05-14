@@ -16,6 +16,8 @@ module.exports = {
     BAN_CLIENT: '$BAN',
     CLIENT_NOT_FOUND: '$USER_NOT_FOUND',
     CLIENTS: '$CLIENTS',
+    DESCLASSIFY: '$DESCLASSIFY',
+    NOT_ANSWERS_YET: '$NOT_ANSWERS_YET',
     ANSWER: '$ANSWER',
     SET_TYPE: '$SET_TYPE',
     INVALID_TYPES: '$INVALID_TYPES',
@@ -26,7 +28,8 @@ module.exports = {
   errors: {
     INVALID_OPERATION: 3,
     CLIENT_NOT_FOUND: 5,
-    INVALID_TYPES: 7
+    INVALID_TYPES: 7,
+    NOT_ANSWERS_YET: 9
   },
 
   types: {
