@@ -39,7 +39,7 @@ module.exports = {
     return true
   },
 
-  setTimeout(id, timeout) {
+  setTimeout (id, timeout) {
     if (!boards.has(id)) {
       return false
     }
@@ -118,7 +118,7 @@ module.exports = {
     return true
   },
 
-  getType(boardId) {
+  getType (boardId) {
     if (!boards.has(boardId)) {
       return false
     }
