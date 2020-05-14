@@ -6,6 +6,7 @@ module.exports = {
     CLOSE_BOARD: '$CLOSE_BOARD',
     BOARD_NOT_FOUND: '$BOARD_NOT_FOUND',
     CLIENT: '$WHO',
+    TYPE: '$TYPE',
     SET_TIMEOUT: '$SET_TIMEOUT',
     GAME_PAUSED: '$GAME_PAUSED',
     PAUSE_GAME: '$PAUSE_GAME',
@@ -31,6 +32,11 @@ module.exports = {
   types: {
     all: 'fruit,country,name,color,animal,thing,last_name,plant,carreer',
     simple: 'name,color,country'
+  },
+
+  answers: {
+    all: 'apple,australia,alba,amarillo,araña,asta,astengo,amapola,astronauta',
+    simple: 'amelia,amarillo,alemania'
   },
 
   gameLetters: 'ABCDEFGHIJQLMNÑOPQRSTUVWXYZ'.split(''),

@@ -73,7 +73,7 @@ module.exports = {
     // <group_types>|<answer_types>
     const typeData = answer.split('|')
     if (typeData.length < 2 ||
-            (typeData.length === 2 && !this.validTypes(typeData[0])) ||
+            (typeData.length === 2 && !validTypes(typeData[0])) ||
             (typeData.length === 2 && typeData[1].split(',').length !== typeData[0].split(',').length)
     ) {
       return errors.INVALID_TYPES
@@ -116,6 +116,13 @@ module.exports = {
     }
     boards.get(boardId).type = type
     return true
+  },
+
+  getType(boardId) {
+    if (!boards.has(boardId)) {
+      return false
+    }
+    return boards.get(boardId).type
   },
 
   hasClient (boardId, clientId) {
@@ -177,7 +184,7 @@ module.exports = {
     updateTime(board)
     board.paused = false
     return board.clients || false
-  }
+  },
 }
 
 const validTypes = (types) => types.split(',').every(type => GameTypes[selectedType].split(',').includes(type))
