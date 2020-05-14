@@ -166,6 +166,25 @@ module.exports = {
           return
         }
 
+        // Send the answer for a client
+        if (message.startsWith(messages.DESCLASSIFY)) {
+          const messageParts = message.split(':')
+          const [type, clientsToDesclassify] = messageParts.pop().split('|')
+          const desclassifyResult = boardController.desclassify(client.board, client.id, type, clientsToDesclassify)
+          if (desclassifyResult !== true) {
+            let errorMessages = {
+              [false]: messages.BOARD_NOT_FOUND,
+              [errors.CLIENT_NOT_FOUND]: messages.CLIENT_NOT_FOUND,
+              [errors.NOT_ANSWERS_YET]: messages.NOT_ANSWERS_YET,
+              [errors.INVALID_TYPES]: messages.INVALID_TYPES,
+            }
+            client.send(errorMessages[desclassifyResult])
+            return
+          }
+          client.send(messages.DESCLASSIFY + ':' + JSON.stringify(boardController.getLastClassify(client.board, client.id)))
+          return
+        }
+
         client.send(message + ': ' + messages.COMMAND_INCORRECT)
       })
     })

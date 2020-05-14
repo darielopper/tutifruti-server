@@ -72,32 +72,76 @@ module.exports = {
     }
     // <group_types>|<answer_types>
     const typeData = answer.split('|')
+    const answerTypes = typeData[0].split(',')
+    const answerValues = typeData[1].split(',')
     if (typeData.length < 2 ||
             (typeData.length === 2 && !validTypes(typeData[0])) ||
             (typeData.length === 2 && typeData[1].split(',').length !== typeData[0].split(',').length)
     ) {
       return errors.INVALID_TYPES
     }
-    let answersData = new Map()
     const letter = board.letter
-    if (board.answers.has(letter)) {
-      answersData = board.answers.get(letter)
+    if (!board.answers.has(letter)) {
+      board.answers.set(letter, new Map())
     }
+    const answersData = board.answers.get(letter)
     const answerObj = {}
-    const answerTypes = typeData[0].split(',')
     let i = 0
     for (const key of answerTypes) {
       // Start with all points until the clients start disclasiffying
-      answerObj[key] = { value: answerTypes[i++], points: pointsForAnswer * board.clients.length }
+      answerObj[key] = { value: answerValues[i++], points: pointsForAnswer * (board.clients.length - 1) }
     }
     answersData.set(clientId, answerObj)
     // If all client get their answers
-    if (answersData.keys().length === board.clients.length - 1) {
+    if (answersData.keys().length === board.clients.length) {
       this.updateLetter(board)
       return true
     }
 
     return true
+  },
+
+  desclassify (boardId, clientId, type, wrongs) {
+    // @TODO A client can not desclassify twice the same type for the same client
+    if (!boards.has(boardId)) {
+      return false
+    }
+    const board = boards.get(boardId)
+    const client = this.getClient(board, clientId)
+    if (!client) {
+      return errors.CLIENT_NOT_FOUND
+    }
+    if (!validTypes(type)) {
+      return errors.INVALID_TYPES
+    }
+    const wrongClients = wrongs.split(',')
+    for (let client of wrongClients) {
+      if (!this.getClient(board, client)) {
+        return errors.CLIENT_NOT_FOUND
+      }
+    }
+    let answers
+    for (let client of wrongClients) {
+      if (wrongClients === clientId) continue
+      answers = [...board.answers.values()].pop()
+      if (!answers) {
+        return errors.NOT_ANSWERS_YET
+      }
+      let answerData = answers.get(client)
+      answerData[type].points -= pointsForAnswer
+    }
+    return true
+  },
+
+  getLastClassify (boardId, clientId) {
+    if (!boards.has(boardId) || !this.getClient(boards.get(boardId), clientId)) {
+      return false
+    }
+    const board = boards.get(boardId)
+    const answers = [...board.answers.values()].pop()
+    const clients = [...answers.keys()]
+    const lastAnswer = [...answers.values()]
+    return lastAnswer.map((answer, index) => ({ client: clients[index], points: Object.values(answer).reduce((total, item) => total += item.points, 0)}))
   },
 
   updateLetter (board) {
@@ -190,6 +234,8 @@ module.exports = {
 const validTypes = (types) => types.split(',').every(type => GameTypes[selectedType].split(',').includes(type))
 
 const updateTime = (board) => (board.time = new Date())
+
+const hasAllAnswer = (board) => [...board.answers.values()].keys().length === board.clients.length
 
 const automaticClean = () => {
   setInterval(() => {
