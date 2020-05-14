@@ -166,7 +166,7 @@ module.exports = {
           return
         }
 
-        // Send the answer for a client
+        // Desclassify the answer of some clients
         if (message.startsWith(messages.DESCLASSIFY)) {
           const messageParts = message.split(':')
           const [type, clientsToDesclassify] = messageParts.pop().split('|')

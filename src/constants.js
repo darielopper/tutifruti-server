@@ -42,6 +42,12 @@ module.exports = {
     simple: 'amelia,amarillo,alemania'
   },
 
+  // Classification Mode for the counter not count the player of the answers
+  classifyMode: {
+    democratic: 3, // Means that if more than fifty percent of the players desclassify an answers the player gain cero points
+    strict: 5 // Means that all the players must desclassify an answers for one player to that player gain cero points
+  },
+
   gameLetters: 'ABCDEFGHIJQLMNÑOPQRSTUVWXYZ'.split(''),
 
   TYPE: 0,
