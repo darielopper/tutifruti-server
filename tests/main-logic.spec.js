@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const server = require('../src/server')
-const { types } = require('../src/constants')
+const { types, answers } = require('../src/constants')
 const webSocket = require('ws')
 let ws, ws2, ws3
 
@@ -31,6 +31,17 @@ describe('Test to check the main logic of the game', () => {
         done()
     })
 
+    it('Show error if client send his answer and doesn\'t join to a board', (done) => {
+        ws.board = null
+        const listener = (message) => {
+            expect(message).to.contain('BOARD_NOT_FOUND')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$ANSWER:' + types.simple + '|' + answers.simple)
+    })
+
     it('Client can change game type successfully', (done) => {
         const messages = []
         const listener = (message) => {
@@ -46,12 +57,33 @@ describe('Test to check the main logic of the game', () => {
                 ws.send('$TYPE')
                 return
             }
-            if (messages.length === 3) {
-                expect(message).to.contain('TYPE')
-                expect(message.split(' ').pop()).to.eq(types.simple)
-                ws.off('message', listener)
-                done()
+            expect(message).to.contain('TYPE')
+            expect(message.split(' ').pop()).to.eq(types.simple)
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
+
+    it('Client can send his answer successfully', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length === 1) {
+                const jsonData = JSON.parse(message)
+                expect(!!jsonData).to.true
+                ws.send('$ANSWER:alfa|beta')
+                return
             }
+            if (messages.length === 2) {
+                expect(message).to.contain('INVALID_TYPES')
+                ws.send('$ANSWER:' + types.simple + '|' + answers.simple)
+                return
+            }
+            expect(message).to.equal('$ANSWER')
+            ws.off('message', listener)
+            done()
         }
         ws.on('message', listener)
         ws.send('$START_BOARD')

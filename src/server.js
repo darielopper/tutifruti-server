@@ -1,23 +1,23 @@
 const WebSocket = require('ws')
 const utils = require('./utils')
 const boardController = require('./boards')
-const { messages, TYPE } = require('./constants')
+const { messages, errors } = require('./constants')
 const Logger = require('./log')
 
 let ws
 const port = process.env.PORT || 8081
 
 module.exports = {
-  start () {
+  start() {
     ws = new WebSocket.Server({
       port
     })
 
-    ws.on('connection', function open (client) {
+    ws.on('connection', function open(client) {
       Logger.info('Connected 1 client')
       client.send('Connection successfully')
 
-      client.on('message', function incomming (message) {
+      client.on('message', function incomming(message) {
         Logger.info(message)
 
         // Start the Board
@@ -144,15 +144,25 @@ module.exports = {
           return
         }
 
+        // Send the answer for a client
         if (message.startsWith(messages.ANSWER)) {
-          const anwser = message.split(':').pop()
-          const answerParts = anwser.split('|')
-          const validType = boardController.setType(client.board, answerParts[TYPE])
-          if (validType !== true) {
-            client.send(!validType ? messages.BOARD_NOT_FOUND : messages.INVALID_TYPES)
+          const anwser = message.split(':').pop().trim()
+          const operationSuccess = boardController.setAnswer(client.board, client.id, anwser)
+          if (operationSuccess !== true) {
+            switch (operationSuccess) {
+              case errors.INVALID_TYPES:
+                client.send(messages.INVALID_TYPES);
+                break;
+              case errors.CLIENT_NOT_FOUND:
+                client.send(messages.CLOSE_BOARD);
+                break;
+              default:
+                client.send(messages.BOARD_NOT_FOUND);
+                break;
+            }
             return
           }
-          client.send(messages.SET_TYPE)
+          client.send(messages.ANSWER)
           return
         }
 
@@ -161,11 +171,11 @@ module.exports = {
     })
   },
 
-  stop () {
+  stop() {
     ws.close()
   },
 
-  port () {
+  port() {
     return port
   }
 }

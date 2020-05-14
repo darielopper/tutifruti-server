@@ -34,6 +34,11 @@ module.exports = {
     simple: 'name,color,country'
   },
 
+  answers: {
+    all: 'apple,australia,alba,amarillo,araña,asta,astengo,amapola,astronauta',
+    simple: 'amelia,amarillo,alemania'
+  },
+
   gameLetters: 'ABCDEFGHIJQLMNÑOPQRSTUVWXYZ'.split(''),
 
   TYPE: 0,
