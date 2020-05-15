@@ -185,6 +185,30 @@ module.exports = {
           return
         }
 
+        // Set the mode of classification for a board
+        if (message.startsWith(messages.SET_MODE)) {
+          const modeId = message.split(':').pop().trim()
+          const operationResult = boardController.setMode(client.board, client.id, modeId)
+          if (operationResult !== true) {
+            client.send(!operationResult ? messages.CLOSE_BOARD : messages.INVALID_MODE)
+            return
+          }
+          client.send(messages.SET_MODE)
+          return
+        }
+
+        // Get the mode of classification for a board
+        if (message === messages.MODE) {
+          const mode = boardController.getMode(client.board)
+          if (!mode) {
+            client.send(messages.CLOSE_BOARD)
+            return
+          }
+          const board = boardController.find(client.board)
+          client.send(messages.MODE + ':' + board.mode)
+          return
+        }
+
         client.send(message + ': ' + messages.COMMAND_INCORRECT)
       })
     })

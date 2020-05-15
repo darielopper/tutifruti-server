@@ -17,7 +17,8 @@ module.exports = {
       time: new Date(),
       timeout: inactivityTimeout,
       clients: [],
-      answers: new Map()
+      answers: new Map(),
+      mode,
     })
   },
 
@@ -48,6 +49,24 @@ module.exports = {
     board.timeout = timeout
     updateTime(board)
     return true
+  },
+
+  setMode (boardId, clientId, modeId) {
+    if (![classifyMode.democratic, classifyMode.strict].includes(Number(modeId))) {
+      return errors.INVALID_MODE
+    }
+    if (!boards.has(boardId) || !this.getClient(boards.get(boardId), clientId)) {
+      return false
+    }
+    boards.get(boardId).mode = modeId
+    return true
+  },
+
+  getMode (boardId) {
+    if (!boards.has(boardId)) {
+      return false
+    }
+    return boards.get(boardId).mode
   },
 
   getClients (id) {
