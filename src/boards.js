@@ -1,10 +1,11 @@
 const utils = require('./utils')
-const { messages, errors, types: GameTypes, gameLetters } = require('./constants')
+const { messages, errors, types: GameTypes, gameLetters, classifyMode } = require('./constants')
 const boards = new Map()
 const inactivityTimeout = process.env.TIMEOUT || (process.env.NODE_ENV === 'test' ? 2000 : 60)
 const pauseTimeout = process.env.PAUSE_TIMEOUT || (process.env.NODE_ENV === 'test' ? 5 : 40)
 const maxPlayers = process.env.MAX_PLAYER || 2
 const pointsForAnswer = process.env.POINTS_FOR_ANSWER || 10
+const mode = process.env.GAME_MODE || classifyMode.democratic
 const selectedType = process.env.SELECTED_TYPE || 'simple'
 
 module.exports = {
@@ -16,7 +17,8 @@ module.exports = {
       time: new Date(),
       timeout: inactivityTimeout,
       clients: [],
-      answers: new Map()
+      answers: new Map(),
+      mode
     })
   },
 
@@ -47,6 +49,24 @@ module.exports = {
     board.timeout = timeout
     updateTime(board)
     return true
+  },
+
+  setMode (boardId, clientId, modeId) {
+    if (![classifyMode.democratic, classifyMode.strict].includes(Number(modeId))) {
+      return errors.INVALID_MODE
+    }
+    if (!boards.has(boardId) || !this.getClient(boards.get(boardId), clientId)) {
+      return false
+    }
+    boards.get(boardId).mode = modeId
+    return true
+  },
+
+  getMode (boardId) {
+    if (!boards.has(boardId)) {
+      return false
+    }
+    return boards.get(boardId).mode
   },
 
   getClients (id) {

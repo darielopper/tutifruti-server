@@ -22,14 +22,18 @@ module.exports = {
     SET_TYPE: '$SET_TYPE',
     INVALID_TYPES: '$INVALID_TYPES',
     COMMAND_INCORRECT: '$COMMAND_INCORRECT',
-    INACTIVITY: 'END CONNECTION FOR INACTIVITY'
+    INACTIVITY: 'END CONNECTION FOR INACTIVITY',
+    SET_MODE: '$SET_MODE',
+    INVALID_MODE: '$INVALID_MODE',
+    MODE: '$MODE'
   },
 
   errors: {
     INVALID_OPERATION: 3,
     CLIENT_NOT_FOUND: 5,
     INVALID_TYPES: 7,
-    NOT_ANSWERS_YET: 9
+    NOT_ANSWERS_YET: 9,
+    INVALID_MODE: 11
   },
 
   types: {
@@ -40,6 +44,12 @@ module.exports = {
   answers: {
     all: 'apple,australia,alba,amarillo,araña,asta,astengo,amapola,astronauta',
     simple: 'amelia,amarillo,alemania'
+  },
+
+  // Classification Mode for the counter not count the player of the answers
+  classifyMode: {
+    democratic: 3, // Means that if more than fifty percent of the players desclassify an answers the player gain cero points
+    strict: 5 // Means that all the players must desclassify an answers for one player to that player gain cero points
   },
 
   gameLetters: 'ABCDEFGHIJQLMNÑOPQRSTUVWXYZ'.split(''),
