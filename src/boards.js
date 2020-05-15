@@ -18,7 +18,7 @@ module.exports = {
       timeout: inactivityTimeout,
       clients: [],
       answers: new Map(),
-      mode,
+      mode
     })
   },
 
