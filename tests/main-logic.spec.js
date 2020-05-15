@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const server = require('../src/server')
-const { types, answers } = require('../src/constants')
+const { types, answers, classifyMode } = require('../src/constants')
 const webSocket = require('ws')
 let ws, ws2, ws3
 
@@ -82,6 +82,39 @@ describe('Test to check the main logic of the game', () => {
                 return
             }
             expect(message).to.equal('$ANSWER')
+            ws.off('message', listener)
+            done()
+        }
+        ws.on('message', listener)
+        ws.send('$START_BOARD')
+    })
+
+    it('Client can change the classification mode', (done) => {
+        const messages = []
+        const listener = (message) => {
+            messages.push(message)
+            if (messages.length === 1) {
+                const jsonData = JSON.parse(message)
+                expect(!!jsonData).to.true
+                ws.send('$MODE')
+                return
+            }
+            if (messages.length === 2) {
+                expect(message).to.equal('$MODE:' + classifyMode.democratic)
+                ws.send('$SET_MODE:' + (classifyMode * 2))
+                return
+            }
+            if (messages.length === 3) {
+                expect(message).to.contain('INVALID_MODE')
+                ws.send('$SET_MODE:' + classifyMode.strict)
+                return
+            }
+            if (messages.length === 4) {
+                expect(message).to.contain('SET_MODE')
+                ws.send('$MODE')
+                return
+            }
+            expect(message).to.equal('$MODE:' + classifyMode.strict)
             ws.off('message', listener)
             done()
         }
