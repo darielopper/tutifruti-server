@@ -109,7 +109,7 @@ module.exports = {
     let i = 0
     for (const key of answerTypes) {
       // Start with all points until the clients start disclasiffying
-      answerObj[key] = { value: answerValues[i++], points: pointsForAnswer * (board.clients.length - 1) }
+      answerObj[key] = { value: answerValues[i++], points: pointsForAnswer * (board.clients.length - 1), voted: [] }
     }
     answersData.set(clientId, answerObj)
     // If all client get their answers
@@ -159,7 +159,11 @@ module.exports = {
         return errors.NOT_ANSWERS_YET
       }
       const answerData = answers.get(client)
+      if (answerData[type].voted.includes(clientId)) {
+        return errors.VOTED_BEFORE
+      }
       answerData[type].points -= pointsForAnswer
+      answerData[type].voted.push(clientId)
     }
     return true
   },

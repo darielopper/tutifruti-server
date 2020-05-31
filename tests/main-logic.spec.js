@@ -171,15 +171,20 @@ describe.only('Test to check the main logic of the game', () => {
                 ws.send('$ANSWER:' + types.simple + '|' + answers.simple)
                 return
             }
-            expect(message).to.contains('DISCLASSIFY')
-            const jsonData = JSON.parse(message.substr(message.indexOf(':') + 1))
-            expect(!!jsonData).to.true
-            for(let clientData of jsonData) {
-                if (clientData.client === firstClient) {
-                    // Is 20 because originally was 30 and after disclasiffy is 10 points less
-                    expect(clientData.points).to.equal(20)
+            if (messages2.length === 7) {
+                expect(message).to.contains('DISCLASSIFY')
+                const jsonData = JSON.parse(message.substr(message.indexOf(':') + 1))
+                expect(!!jsonData).to.true
+                for(let clientData of jsonData) {
+                    if (clientData.client === firstClient) {
+                        // Is 20 because originally was 30 and after disclasiffy is 10 points less
+                        expect(clientData.points).to.equal(20)
+                    }
                 }
+                ws2.send('$DISCLASSIFY:name|' + firstClient)
+                return
             }
+            expect(message).to.equal('$VOTED_BEFORE')
             ws2.off('message', listener2)
             done()
         }

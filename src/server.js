@@ -177,7 +177,8 @@ module.exports = {
               [errors.CLIENT_NOT_FOUND]: messages.CLIENT_NOT_FOUND,
               [errors.NOT_ANSWERS_YET]: messages.NOT_ANSWERS_YET,
               [errors.INVALID_TYPES]: messages.INVALID_TYPES,
-              [errors.NOT_CLIENTS_PROVIDED]: messages.NOT_CLIENTS_PROVIDED
+              [errors.NOT_CLIENTS_PROVIDED]: messages.NOT_CLIENTS_PROVIDED,
+              [errors.VOTED_BEFORE]: messages.VOTED_BEFORE
             }
             client.send(errorMessages[desclassifyResult])
             return
