@@ -90,7 +90,7 @@ module.exports = {
     if (!client) {
       return errors.CLIENT_NOT_FOUND
     }
-    // <group_types>|<answer_types>
+    // <answer_types>|<answer_values>
     const typeData = answer.split('|')
     const answerTypes = typeData[0].split(',')
     const answerValues = typeData[1].split(',')
@@ -109,7 +109,7 @@ module.exports = {
     let i = 0
     for (const key of answerTypes) {
       // Start with all points until the clients start disclasiffying
-      answerObj[key] = { value: answerValues[i++], points: pointsForAnswer * (board.clients.length - 1) }
+      answerObj[key] = { value: answerValues[i++], points: pointsForAnswer * (board.clients.length - 1), voted: [] }
     }
     answersData.set(clientId, answerObj)
     // If all client get their answers
@@ -121,8 +121,15 @@ module.exports = {
     return true
   },
 
-  desclassify (boardId, clientId, type, wrongs) {
-    // @TODO A client can not desclassify twice the same type for the same client
+  /**
+   *
+   * @param boardId
+   * @param clientId
+   * @param type Which type of question will be disclassify (name, country, animal, plant, etc) based on game type selected
+   * @param wrongs Client Ids that whe want to disclassify in this format: id1,id2,id3
+   * @returns {boolean|number}
+   */
+  disclassify (boardId, clientId, type, wrongs) {
     if (!boards.has(boardId)) {
       return false
     }
@@ -133,6 +140,9 @@ module.exports = {
     }
     if (!validTypes(type)) {
       return errors.INVALID_TYPES
+    }
+    if (!wrongs) {
+      return errors.NOT_CLIENTS_PROVIDED
     }
     const wrongClients = wrongs.split(',')
     for (const client of wrongClients) {
@@ -148,7 +158,11 @@ module.exports = {
         return errors.NOT_ANSWERS_YET
       }
       const answerData = answers.get(client)
+      if (answerData[type].voted.includes(clientId)) {
+        return errors.VOTED_BEFORE
+      }
       answerData[type].points -= pointsForAnswer
+      answerData[type].voted.push(clientId)
     }
     return true
   },
