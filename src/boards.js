@@ -130,7 +130,6 @@ module.exports = {
    * @returns {boolean|number}
    */
   disclassify (boardId, clientId, type, wrongs) {
-    // @TODO A client can not disclassify twice the same type for the same client
     if (!boards.has(boardId)) {
       return false
     }

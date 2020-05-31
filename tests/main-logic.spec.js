@@ -4,7 +4,7 @@ const {types, answers, classifyMode} = require('../src/constants')
 const webSocket = require('ws')
 let ws, ws2, ws3
 
-describe.only('Test to check the main logic of the game', () => {
+describe('Test to check the main logic of the game', () => {
     before(() => {
         server.start()
         const uri = `ws://localhost:${server.port()}`
@@ -31,7 +31,7 @@ describe.only('Test to check the main logic of the game', () => {
         done()
     })
 
-    it.skip('Show error if client send his answer and doesn\'t join to a board', (done) => {
+    it('Show error if client send his answer and doesn\'t join to a board', (done) => {
         ws.board = null
         const listener = (message) => {
             expect(message).to.contain('BOARD_NOT_FOUND')
@@ -42,7 +42,7 @@ describe.only('Test to check the main logic of the game', () => {
         ws.send('$ANSWER:' + types.simple + '|' + answers.simple)
     })
 
-    it.skip('Client can change game type successfully', (done) => {
+    it('Client can change game type successfully', (done) => {
         const messages = []
         const listener = (message) => {
             messages.push(message)
@@ -66,7 +66,7 @@ describe.only('Test to check the main logic of the game', () => {
         ws.send('$START_BOARD')
     })
 
-    it.skip('Client can send his answer successfully', (done) => {
+    it('Client can send his answer successfully', (done) => {
         const messages = []
         const listener = (message) => {
             messages.push(message)
@@ -89,7 +89,7 @@ describe.only('Test to check the main logic of the game', () => {
         ws.send('$START_BOARD')
     })
 
-    it.skip('Client can change the classification mode', (done) => {
+    it('Client can change the classification mode', (done) => {
         const messages = []
         const listener = (message) => {
             messages.push(message)
