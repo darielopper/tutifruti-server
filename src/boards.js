@@ -90,7 +90,7 @@ module.exports = {
     if (!client) {
       return errors.CLIENT_NOT_FOUND
     }
-    // <group_types>|<answer_types>
+    // <answer_types>|<answer_values>
     const typeData = answer.split('|')
     const answerTypes = typeData[0].split(',')
     const answerValues = typeData[1].split(',')
@@ -121,8 +121,16 @@ module.exports = {
     return true
   },
 
-  desclassify (boardId, clientId, type, wrongs) {
-    // @TODO A client can not desclassify twice the same type for the same client
+  /**
+   *
+   * @param boardId
+   * @param clientId
+   * @param type Which type of question will be disclassify (name, country, animal, plant, etc) based on game type selected
+   * @param wrongs Client Ids that whe want to disclassify in this format: id1,id2,id3
+   * @returns {boolean|number}
+   */
+  disclassify (boardId, clientId, type, wrongs) {
+    // @TODO A client can not disclassify twice the same type for the same client
     if (!boards.has(boardId)) {
       return false
     }
@@ -133,6 +141,9 @@ module.exports = {
     }
     if (!validTypes(type)) {
       return errors.INVALID_TYPES
+    }
+    if (!wrongs) {
+      return errors.NOT_CLIENTS_PROVIDED
     }
     const wrongClients = wrongs.split(',')
     for (const client of wrongClients) {

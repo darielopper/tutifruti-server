@@ -167,21 +167,22 @@ module.exports = {
         }
 
         // Desclassify the answer of some clients
-        if (message.startsWith(messages.DESCLASSIFY)) {
+        if (message.startsWith(messages.DISCLASSIFY)) {
           const messageParts = message.split(':')
           const [type, clientsToDesclassify] = messageParts.pop().split('|')
-          const desclassifyResult = boardController.desclassify(client.board, client.id, type, clientsToDesclassify)
+          const desclassifyResult = boardController.disclassify(client.board, client.id, type, clientsToDesclassify)
           if (desclassifyResult !== true) {
             const errorMessages = {
               [false]: messages.BOARD_NOT_FOUND,
               [errors.CLIENT_NOT_FOUND]: messages.CLIENT_NOT_FOUND,
               [errors.NOT_ANSWERS_YET]: messages.NOT_ANSWERS_YET,
-              [errors.INVALID_TYPES]: messages.INVALID_TYPES
+              [errors.INVALID_TYPES]: messages.INVALID_TYPES,
+              [errors.NOT_CLIENTS_PROVIDED]: messages.NOT_CLIENTS_PROVIDED
             }
             client.send(errorMessages[desclassifyResult])
             return
           }
-          client.send(messages.DESCLASSIFY + ':' + JSON.stringify(boardController.getLastClassify(client.board, client.id)))
+          client.send(messages.DISCLASSIFY + ':' + JSON.stringify(boardController.getLastClassify(client.board, client.id)))
           return
         }
 
